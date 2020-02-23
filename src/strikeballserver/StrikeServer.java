@@ -20,23 +20,48 @@ public class StrikeServer {
     private static int porta=3500;
     private ArrayList<StrikeClient> listaClient;
     private final int NUMEROMASSIMOGIOCATORI=5;
+    private final int SECONDIATTESAINIZIOPARTITA = 30;
+    private CountDownTimer cdt = null;
     
     
     public StrikeServer() {
         listaClient=new ArrayList();
-        try(ServerSocket serverSocket = new ServerSocket(porta)){
-
-            while(listaClient.size()<NUMEROMASSIMOGIOCATORI){
-                System.out.println("Il Server è in attesa di connessioni nella porta "+serverSocket.getLocalPort());
+        apriLobbyPerConnessioni();
+    }
+    
+    private void apriLobbyPerConnessioni(){
+        int secondiRimanenti=SECONDIATTESAINIZIOPARTITA;
+        System.out.println("Il Server è in attesa di connessioni nella porta "+porta);
+        while(listaClient.size()<NUMEROMASSIMOGIOCATORI && secondiRimanenti>0){
+            try(ServerSocket serverSocket = new ServerSocket(porta)){
+                serverSocket.setSoTimeout(1000);
+                if(listaClient.size()>=2 && cdt==null){
+                    cdt = new CountDownTimer(SECONDIATTESAINIZIOPARTITA,this);
+                    Thread t = new Thread(cdt);
+                    t.start();
+                }
+                if(cdt!=null)secondiRimanenti=cdt.getSecondiRimanenti();
+                
                 Socket connessione=serverSocket.accept();
                 System.out.println("Connessione stabilita con "+connessione.getInetAddress());
-                listaClient.add(new StrikeClient(connessione));
+                StrikeClient sc = new StrikeClient(connessione);
+                sc.start();
+                listaClient.add(sc);
+            }catch (SocketTimeoutException ex){
+                //Tempo di connessione esaurito, creazione di un nuovo serverSocket
+            }catch (IOException ex){
+                System.err.println("Errore nella creazione del ServerSocket");
             }
-            
-        }catch (SocketTimeoutException ex){
-            System.err.println("Il server ha impiegato troppo tempo per accettare le connessioni");
-        }catch (IOException ex){
-            System.err.println("Errore nella creazione del ServerSocket");
+       }
+        cdt.Stop();
+        System.out.println("Inizio della partita!");
+        InviaMessaggioAiClient("Inizio della partita!");
+    }
+    
+    
+    public void InviaMessaggioAiClient(String messaggio){
+        for(StrikeClient sc:listaClient){
+            sc.InviaMessaggio(messaggio);
         }
     }
     
