@@ -16,7 +16,7 @@ public class CountDownTimer implements Runnable{
     private StrikeServer strikeServer;
     private int secondi;
     private int secondiRimanenti;
-    private final Integer[] numbers = {60,45,30,20,15,10,5,4,3,2,1};
+    private final Integer[] numeriAvvisati = {60,45,30,20,15,10,5,4,3,2,1};
     
     public CountDownTimer(int secondi, StrikeServer strikeServer){
         this.secondi=secondi;
@@ -28,7 +28,7 @@ public class CountDownTimer implements Runnable{
     public void run() {
         while(secondiRimanenti>0){
             
-            if(Arrays.asList(numbers).contains(secondiRimanenti)) {
+            if(Arrays.asList(numeriAvvisati).contains(secondiRimanenti)) {
             System.out.println(secondiRimanenti+" secondi rimanenti!");
             strikeServer.InviaMessaggioAiClient("La partita inizierà tra "+secondiRimanenti+ " secondi!");
             }

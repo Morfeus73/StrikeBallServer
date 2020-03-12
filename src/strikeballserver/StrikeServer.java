@@ -20,16 +20,15 @@ public class StrikeServer {
     private static int porta=3500;
     private ArrayList<StrikeClient> listaClient;
     private final int NUMEROMASSIMOGIOCATORI=5;
-    private final int SECONDIATTESAINIZIOPARTITA = 30;
-    private CountDownTimer cdt = null;
+    private final int SECONDIATTESAINIZIOPARTITA=30;
     
     
     public StrikeServer() {
         listaClient=new ArrayList();
-        apriLobbyPerConnessioni();
     }
     
-    private void apriLobbyPerConnessioni(){
+    public void apriLobbyPerConnessioni(){
+        CountDownTimer cdt = null;
         int secondiRimanenti=SECONDIATTESAINIZIOPARTITA;
         System.out.println("Il Server è in attesa di connessioni nella porta "+porta);
         while(listaClient.size()<NUMEROMASSIMOGIOCATORI && secondiRimanenti>0){
@@ -44,7 +43,7 @@ public class StrikeServer {
                 
                 Socket connessione=serverSocket.accept();
                 System.out.println("Connessione stabilita con "+connessione.getInetAddress());
-                StrikeClient sc = new StrikeClient(connessione);
+                StrikeClient sc = new StrikeClient(connessione, this);
                 sc.start();
                 listaClient.add(sc);
             }catch (SocketTimeoutException ex){
@@ -52,12 +51,9 @@ public class StrikeServer {
             }catch (IOException ex){
                 System.err.println("Errore nella creazione del ServerSocket");
             }
-       }
+        }
         cdt.Stop();
-        System.out.println("Inizio della partita!");
-        InviaMessaggioAiClient("Inizio della partita!");
     }
-    
     
     public void InviaMessaggioAiClient(String messaggio){
         for(StrikeClient sc:listaClient){

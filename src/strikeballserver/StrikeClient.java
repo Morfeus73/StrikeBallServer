@@ -20,14 +20,16 @@ import java.util.logging.Logger;
 public class StrikeClient extends Thread {
     
     private Socket socket;
+    private StrikeServer server;
     private BufferedReader Lettore;
     private PrintWriter Scrittore;
     
-    public StrikeClient(Socket socket){
+    public StrikeClient(Socket socket, StrikeServer server){
         this.socket=socket;
+        this.server=server;
         try {
             Lettore = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            Scrittore =new PrintWriter(socket.getOutputStream(),true);
+            Scrittore = new PrintWriter(socket.getOutputStream(),true);
         } catch (IOException ex) {
             Logger.getLogger(StrikeClient.class.getName()).log(Level.SEVERE, null, ex);
         }
