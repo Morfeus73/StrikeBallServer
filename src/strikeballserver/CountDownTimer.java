@@ -14,14 +14,14 @@ import java.util.Arrays;
  */
 public class CountDownTimer implements Runnable{
     private StrikeServer strikeServer;
-    private int secondi;
     private int secondiRimanenti;
-    private final Integer[] numeriAvvisati = {60,45,30,20,15,10,5,4,3,2,1};
+    private String msg;
+    private final Integer[] numeriAvvisati = {60,45,30,20,15,10,5,3,2,1};
     
-    public CountDownTimer(int secondi, StrikeServer strikeServer){
-        this.secondi=secondi;
+    public CountDownTimer(int secondi, StrikeServer strikeServer, String msg){
         this.secondiRimanenti = secondi;
         this.strikeServer=strikeServer;
+        this.msg=msg;
     }
     
     @Override
@@ -29,8 +29,8 @@ public class CountDownTimer implements Runnable{
         while(secondiRimanenti>0){
             
             if(Arrays.asList(numeriAvvisati).contains(secondiRimanenti)) {
-            System.out.println(secondiRimanenti+" secondi rimanenti!");
-            strikeServer.InviaMessaggioAiClient("La partita inizierà tra "+secondiRimanenti+ " secondi!");
+                System.out.println(secondiRimanenti+" secondi rimanenti!");
+                strikeServer.InviaMessaggioAiClient(msg+secondiRimanenti+ " secondi!");
             }
             
             try {
@@ -38,17 +38,13 @@ public class CountDownTimer implements Runnable{
                 Thread.sleep(1000);
             }
             catch (InterruptedException e) {
-                //I don't think you need to do anything for your particular problem
+                System.err.println("Interruzione inaspettata del CountDownTimer");
             }
         }
     }
     
     public void Stop(){
         secondiRimanenti=0;
-    }
-    
-    public int getSecondi(){
-        return secondi;
     }
     
     public int getSecondiRimanenti(){

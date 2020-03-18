@@ -17,10 +17,11 @@ import java.util.ArrayList;
  */
 public class StrikeServer {
     
-    private static int porta=3500;
+    private final int porta=3500;
     private ArrayList<StrikeClient> listaClient;
     private final int NUMEROMASSIMOGIOCATORI=5;
     private final int SECONDIATTESAINIZIOPARTITA=30;
+    public static int fase=0;
     
     
     public StrikeServer() {
@@ -35,7 +36,7 @@ public class StrikeServer {
             try(ServerSocket serverSocket = new ServerSocket(porta)){
                 serverSocket.setSoTimeout(1000);
                 if(listaClient.size()>=2 && cdt==null){
-                    cdt = new CountDownTimer(SECONDIATTESAINIZIOPARTITA,this);
+                    cdt = new CountDownTimer(SECONDIATTESAINIZIOPARTITA,this,"La partita inizierà tra ");
                     Thread t = new Thread(cdt);
                     t.start();
                 }
@@ -53,6 +54,7 @@ public class StrikeServer {
             }
         }
         cdt.Stop();
+        fase=1;
     }
     
     public void InviaMessaggioAiClient(String messaggio){

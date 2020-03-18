@@ -38,7 +38,18 @@ public class StrikeClient extends Thread {
     @Override
     public void run() {
         
-        while(socket.isConnected()){
+        while(socket.isConnected() && !socket.isClosed()){
+            
+            try {
+                String risposta=Partita.controllaSoluzione(LeggiMessaggio());
+                InviaMessaggio(risposta);
+                if(risposta.equals("Hai Vinto!")){
+                    socket.close();
+                    System.out.println("Ho chiuso!");
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(StrikeClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
             
         }
                 
