@@ -17,6 +17,7 @@ public class Partita {
     
     private static final int lunghezzaSoluzione = 4;
     private static String soluzione;
+    public static StrikeServer server;
     
     public static void generaSoluzione(){
         soluzione="";
@@ -38,8 +39,12 @@ public class Partita {
     }
     
     //la proposta di soluzione deve essere una stringa di caratteri senza spazi
-    public static String controllaSoluzione(String propostaSoluzione){
-        if(propostaSoluzione.equals(soluzione))return "Hai Vinto!";
+    public static String controllaSoluzione(String propostaSoluzione, StrikeClient giocatore){
+        if(propostaSoluzione.equals(soluzione)){
+            server.ComunicaVincitore(giocatore.getNickname());
+            server.ChiudiServer();
+            return "Hai Vinto!";
+        }
         int strike = 0, ball = 0;
         char[] soluzioneModificabile = soluzione.toCharArray();
         char[] proposta = propostaSoluzione.toCharArray();

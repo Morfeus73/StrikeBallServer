@@ -20,12 +20,19 @@ public class StrikeServer {
     private final int porta=3500;
     private ArrayList<StrikeClient> listaClient;
     private final int NUMEROMASSIMOGIOCATORI=5;
-    private final int SECONDIATTESAINIZIOPARTITA=30;
-    public static int fase=0;
+    private final int SECONDIATTESAINIZIOPARTITA=3;
+    public int fase=0;
     
     
     public StrikeServer() {
         listaClient=new ArrayList();
+        
+        this.apriLobbyPerConnessioni();
+        System.out.println("Inizio della partita!");
+        
+        Partita.server=this;
+        Partita.generaSoluzione();
+        System.out.println(Partita.getSoluzione());
     }
     
     public void apriLobbyPerConnessioni(){
@@ -62,5 +69,27 @@ public class StrikeServer {
             sc.InviaMessaggio(messaggio);
         }
     }
+
+    public boolean isNicknameDisponibile(String nickname){
+        int i=0;
+        for(StrikeClient sc:listaClient){
+            if(sc.getNickname()!= null){
+                if(sc.getNickname().equals(nickname))
+                    return false;
+                i++;
+            }
+        }
+        if(i==(listaClient.size()-1))
+            fase=2;
+        return true;
+    }
     
+    public void ChiudiServer(){
+        fase=3;
+        this.InviaMessaggioAiClient("Chiusura della connessione...\n[PREMERE IL TASTO INVIO]");
+    }
+    
+    public void ComunicaVincitore(String nickname){
+        this.InviaMessaggioAiClient("Il vincitore è: "+nickname);
+    }
 }
